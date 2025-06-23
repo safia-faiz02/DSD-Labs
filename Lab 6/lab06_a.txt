@@ -1,0 +1,50 @@
+module VM_a(open,clk,reset,N,D); /moore
+input clk,reset,N,D;
+output open;
+reg open; reg [1:0] nxt_state,state;
+parameter zero=2'b00, five=2'b01, ten=2'b10, fifteen=2'b11;
+
+always @(N or D or state)
+case(state)
+zero: begin
+	if(N)
+	nxt_state=five;
+	else if(D)
+	nxt_state=ten;
+	else
+	nxt_state=zero;
+	open=0;
+	end
+five:   begin
+	if(N)
+	nxt_state=ten;
+	else if(D)
+	nxt_state=fifteen;
+	else
+	nxt_state=five;
+	open=0;
+	end
+ten:    begin
+	if(N || D)
+	nxt_state=fifteen;
+	else 
+	nxt_state=ten;
+	open=0;
+	end
+fifteen: begin
+	if(!reset)
+	nxt_state=fifteen;
+	else 
+	nxt_state=zero;
+	open=1;
+	end
+endcase
+
+always@(posedge clk)
+if(reset || (!N && !D))
+state<=zero;
+else
+state<=nxt_state;
+
+endmodule
+

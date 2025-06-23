@@ -1,0 +1,84 @@
+module VM_b(open,clk,reset,N,D); /mealy
+input clk,reset,N,D;
+output open;
+reg open; reg [1:0] nxt_state,state;
+reg nxt_open;
+parameter zero=2'b00, five=2'b01, ten=2'b10, fifteen=2'b11;
+
+always @(N or D or state)
+case(state)
+zero: begin
+	if(N)
+	begin
+	nxt_state=five;
+	nxt_open=0;
+	end
+	else if(D)
+	begin
+	nxt_state=ten;
+	nxt_open=0;
+	end
+	else
+	begin
+	nxt_state=zero;
+	nxt_open=0;
+	end
+       end
+five:   begin
+	if(N)
+	begin
+	nxt_state=ten;
+	nxt_open=0;
+	end
+	else if(D)
+	begin
+	nxt_state=fifteen;
+	nxt_open=1;
+	end
+	else
+	begin
+	nxt_state=five;
+	nxt_open=0;
+	end
+       end
+ten:  begin
+	if(N || D)
+	begin
+	nxt_state=fifteen;
+	nxt_open=1;
+	end
+	else 
+	begin
+	nxt_state=ten;
+	nxt_open=0;
+	end
+       end
+fifteen:begin
+	if(!reset)
+	begin
+	nxt_state=fifteen;
+	nxt_open=1;
+	end
+	else 
+	begin
+	nxt_state=zero;
+	nxt_open=0;
+	end
+       end
+endcase
+
+always@(posedge clk)
+if(reset || (!N && !D))
+begin
+state<=zero;
+open<=0;
+end
+else
+begin
+state<=nxt_state;
+open<=nxt_open;
+end
+
+endmodule
+
+

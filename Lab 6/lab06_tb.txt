@@ -1,0 +1,26 @@
+always 
+#3 clk=!clk;
+	initial begin
+		// Initialize Inputs
+		clk = 0;
+		reset = 1;
+		N = 0;
+		D = 0;
+
+		// Wait 100 ns for global reset to finish
+		#100;
+        
+		// Add stimulus here
+reset=0;
+#5 N=1;
+#5 D=1;
+N=0;
+#5 reset=1;
+#5 reset=0;
+#5 D=1;
+#5 D=1;
+#5 reset=1;
+#5 reset=0;
+#5 D=1;
+#5 N=1;
+#5 N=1;
